@@ -25,7 +25,7 @@ def register(request):
         if request.user.is_authenticated:
             return redirect('dashboard')
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})
 
 def login(request):
     if request.user.is_authenticated:
@@ -49,7 +49,7 @@ def login(request):
                 return redirect('login')
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form})
 
 @login_required(login_url='/login')
 def logout(request):
@@ -70,7 +70,7 @@ def account_home(request):
         'registered_on': user.registered_on.strftime("%d/%m/%Y"),
         'last_login': user.last_active.strftime("%d/%m/%Y") if user.last_active else None,
     }
-    return render(request, "dashboard.html", context)
+    return render(request, "accounts/dashboard.html", context)
 
 @login_required(login_url='/login')
 def profile_edit(request):
@@ -86,7 +86,7 @@ def profile_edit(request):
                 messages.error(request, error)
     else:
         form = ProfileEditForm(instance=user)
-    return render(request, 'edit_profile.html', {'form': form})
+    return render(request, 'accounts/edit_profile.html', {'form': form})
 
 def change_pwd(request):
     if request.method == 'POST':
@@ -107,4 +107,4 @@ def change_pwd(request):
                 messages.error(request, error)
     else:
         form = ChangePasswordForm()
-    return render(request, 'change_password.html', {'form': form})
+    return render(request, 'accounts/change_password.html', {'form': form})
