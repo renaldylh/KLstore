@@ -95,14 +95,27 @@ class ProfileEditForm(forms.ModelForm):
         return email
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(widget=forms.PasswordInput)
-    password = forms.CharField(widget=forms.PasswordInput, validators=[validate_password])
-    confirm_password = forms.CharField(widget=forms.PasswordInput)
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Old Password'}),
+        label="Old Password",
+        required=True
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'New Password'}),
+        label="New Password",
+        required=True
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm New Password'}),
+        label="Confirm New Password",
+        required=True
+    )
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
+
         if password and confirm_password and password != confirm_password:
-            raise ValidationError("Password and Confirm Password do not match.")
+            raise forms.ValidationError("Passwords do not match.")
         return cleaned_data

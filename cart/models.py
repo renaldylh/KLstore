@@ -1,9 +1,7 @@
 from django.db import models
 
-# Create your models here.
 from django.db import models
 from antiques.models import Antique
-# Create your models here.
 
 class Cart(models.Model):
     cart_session = models.CharField(max_length=250)

@@ -6,6 +6,8 @@ from checkout.models import invoice
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Antique, Category
 
@@ -96,7 +98,6 @@ def orders(request):
 
 @login_required(login_url='/login')
 def view_order(request, order_id):
-    # Menggunakan logika dari model order jika tersedia (menyesuaikan implementasi aktual)
     order_items = order_list.objects.filter(order_id=order_id)
     invoice_details = invoice.objects.filter(order_id=order_id)
 

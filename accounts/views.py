@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from .forms import RegisterForm, LoginForm, ProfileEditForm, ChangePasswordForm
 from .models import Account
-# from cart.models import Cart
-# from checkout.models import order
+from cart.models import Cart
+from checkout.models import order
 from datetime import datetime
+from django.contrib.auth import update_session_auth_hash
 
 def register(request):
     if request.method == 'POST':
@@ -80,7 +81,7 @@ def profile_edit(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your profile has been updated.")
-            return redirect('account_home')
+            return redirect('profile_edit')
         else:
             for error in form.errors.values():
                 messages.error(request, error)
@@ -97,11 +98,11 @@ def change_pwd(request):
             if user.check_password(old_password):
                 user.set_password(form.cleaned_data['password'])
                 user.save()
+                update_session_auth_hash(request, user)  # Penting agar pengguna tidak logout
                 messages.success(request, "Your password has been successfully changed.")
                 return redirect('login')
             else:
                 messages.error(request, "Old password is incorrect.")
-                return redirect('change_pwd')
         else:
             for error in form.errors.values():
                 messages.error(request, error)

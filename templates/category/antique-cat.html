@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container ms-auto" style="margin-top: 80px;">
+    <h3 class="default-style"> {{ category_name }}</h3>
+    <hr>
+
+    <div class="row">
+        {% for antique in antiques %}
+        <div class="product-box col-md-2 col-sm-6">
+            <a class="text-decoration-none" href="{% url 'single_antique' antique.slug %}">
+                {% if antique.image %}
+                    <img class="product-img" src="{{ antique.image.url }}" alt="{{ antique.title }}" />
+                {% else %}
+                    <img class="product-img" src="https://via.placeholder.com/300" alt="Placeholder" />
+                {% endif %}
+{#                <img class="product-img" src="{{ antique.image.url }}" alt="{{ antique.title }}" />#}
+                <h3 class="antique-title">{{ antique.title }}</h3>
+                <p class="antique-price"><b>${{ antique.price }}</b></p>
+                <button class="btn btn-custom">Buy Now</button>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <ul class="pagination mt-3">
+        {% if antiques.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ antiques.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">First</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">{{ antiques.number }}</span>
+        </li>
+
+        {% if antiques.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ antiques.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ antiques.paginator.num_pages }}">Last</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Next</span>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">Last</span>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

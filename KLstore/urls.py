@@ -16,9 +16,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from antiques.views import orders
+from antiques.views import view_order
+from antiques.views import view_invoice
+from checkout.views import checkout_req, checkout_page
+from cart.views import update_cart_item
+from django.conf.urls.static import static
+from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
     path('', include('antiques.urls')),
+    path('cart/', include('cart.urls')),
+    path('category/', include('category.urls')),
+    path('checkout/', include('checkout.urls')),
+
+    path('update_cart_item/<str:book_slug>', update_cart_item, name="update_cart"),
+    # path('delete_cart_item/<str:book_slug>', delete_cart_item, name="delete_cart_item"),
+    # path('search/', search_result, name="search_res"),
+    path('checkout', checkout_page, name="checkout_page"),
+    path('checkout_req/process', checkout_req, name="checkout_req"),
+    path('dashboard/orders', orders, name="orders"),
+    path("dashboard/view_order/<int:order_id>", view_order, name="view_order"),
+    path("dashboard/view_invoice/<int:invoice_id>", view_invoice, name="view_invoice"),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

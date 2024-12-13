@@ -9,10 +9,7 @@ background: #2C2B2B;
 box-shadow: 0px 2px 0px rgba(53, 50, 50, 0.25);
 height:46px;
 
-
-
 }
-
 
 .navbar-zero{
     position: absolute;
@@ -50,7 +47,7 @@ color: rgba(239, 239, 239, 0.9);
 padding-right:3px;
 height: 17.4px;
 
-width: 20 px;
+width: 20px;
 
 border-radius: 0px;
 
@@ -72,7 +69,7 @@ border-radius: 0px;
 
 height: 17.4px;
 padding-right:3px;
-width: 23 px;
+width: 23px;
 border-radius: 0px;
 
 }
@@ -221,7 +218,7 @@ padding-right: 14px;
     border-radius: 5px;
     padding: 14px;
     padding: 14px;
-    -0.605rem: ;
+    -0.605:rem ;
     padding-left: 1rem;
     height: 40px;
     padding-right: 3rem;
@@ -233,7 +230,7 @@ padding-right: 14px;
     background-color: #2C2B2B;
     border-color: #ffffff;
 }
-}
+
 
 p.register-infos{
 
@@ -504,14 +501,16 @@ font-size:14px;
 
 background: white;
 color: #222222;
-1px solid rgb(0 0 0 / 27%);
+border: 1px solid rgb(0 0 0 / 27%);
 padding: 24px;
 
 
 
 }
 
-h4.boihut-h4-checkout{
+
+
+h4.antique-h4-checkout{
 
 
     border: 1px solid lightgrey;
@@ -520,7 +519,7 @@ h4.boihut-h4-checkout{
     padding: 13px;
 
 }
-.boihut-checkout-btn{
+.antique-checkout-btn{
 
     margin-top: 15px;
     padding: 10px;
@@ -530,7 +529,7 @@ h4.boihut-h4-checkout{
     font-weight: 600;
 }
 
-.boihut-checkout-continue{
+.antique-checkout-continue{
     margin-top: 30px;
     padding: 10px;
     font-size: 17px;
@@ -545,11 +544,11 @@ h4.boihut-h4-checkout{
     z-index: 2;
     color: #ffffff;
     background-color: #3e3e3e;
-    border-color: none;
+    border-color: initial ;
 }
 
 .list-group-item.active{
-   border-color: #3e3e3e,
+   border-color: #3e3e3e;
 }
 
 
@@ -581,15 +580,13 @@ h4.boihut-h4-checkout{
 
 .hero{
 
-background:
-
 }
 
 .button-buy {
     background: rgb(46 47 43);
     opacity: 0.88;
     width: 147.14px;
-    height: 44px;
+    height: 66px;
     border-radius: 3px;
     border: none;
     outline: none;
@@ -603,7 +600,7 @@ background:
 }
 
 .button-shop {
-    background: #72aa46;
+    background: #b88e09;
     opacity: 2.88;
     width: 148px;
     height: 44px;
@@ -674,7 +671,7 @@ p.default-style{
 }
 
 h3.default-style{
-    color: #458f0b;
+    color: #b88e09;
     font-family: "Poppins", Sans-serif;
     font-size: 24px;
     font-weight: 700;
@@ -685,8 +682,8 @@ h3.default-style{
 .list-group-item.active {
     z-index: 2;
     color: #fff;
-    background-color: none !important;
-    border-color: none !important;
+    background-color: transparent  !important;
+    border-color: initial  !important;
 }
 
 .list-group-item{
@@ -696,7 +693,7 @@ padding-bottom:0.6rem;
 padding-left:0rem;
 padding-right:0rem;
 background: none!important;
-border-color: none!important;
+border-color: initial !important;
 color:rgba(239, 239, 239, 0.9);
 padding: 10px 4px;
 }
@@ -705,7 +702,7 @@ padding: 10px 4px;
     z-index: 3;
     color: #fff;
     background-color: #6a9d42;
-    border-color: none!important;
+    border-color: initial !important;
     }
 
 .page-link {

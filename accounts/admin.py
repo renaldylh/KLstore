@@ -8,4 +8,4 @@ class AccountAdmin(admin.ModelAdmin):
   odering = ('-last_active')
 
 admin.site.register(Account, AccountAdmin)
-# Register your models here.
+
