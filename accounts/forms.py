@@ -4,22 +4,23 @@ from django.core.exceptions import ValidationError
 from .models import Account
 import re
 
-special_char_list = r"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
-email_special_char_list = r"!\"#$%&'()*+,/:;<=>?@[\\]^`{|}~"
+class CustomValidationMixin:
+    special_char_list = r"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    email_special_char_list = r"!\"#$%&'()*+,/:;<=>?@[\\]^`{|}~"
 
-def num_checker(string):
-    return any(i.isdigit() for i in string)
+    def num_checker(self, string):
+        return any(i.isdigit() for i in string)
 
-def special_char_checker(string):
-    return any(i in special_char_list for i in string)
+    def special_char_checker(self, string):
+        return any(i in self.special_char_list for i in string)
 
-def email_special_char_checker(string):
-    if "@" in string:
-        email = re.split(r'@+', string)
-        return any(i in email_special_char_list for i in email[0])
-    return True
+    def email_special_char_checker(self, string):
+        if "@" in string:
+            email = re.split(r'@+', string)
+            return any(i in self.email_special_char_list for i in email[0])
+        return True
 
-class RegisterForm(forms.ModelForm):
+class RegisterForm(forms.ModelForm, CustomValidationMixin):
     password = forms.CharField(widget=forms.PasswordInput, validators=[validate_password])
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
@@ -29,29 +30,23 @@ class RegisterForm(forms.ModelForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
-        if num_checker(first_name):
+        if self.num_checker(first_name):
             raise ValidationError("First Name can't contain numbers.")
-        if special_char_checker(first_name):
+        if self.special_char_checker(first_name):
             raise ValidationError("First Name can't contain special characters.")
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
-        if num_checker(last_name):
+        if self.num_checker(last_name):
             raise ValidationError("Last Name can't contain numbers.")
-        if special_char_checker(last_name):
+        if self.special_char_checker(last_name):
             raise ValidationError("Last Name can't contain special characters.")
         return last_name
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if special_char_checker(username):
-            raise ValidationError("Username can't contain special characters.")
-        return username
-
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email_special_char_checker(email):
+        if self.email_special_char_checker(email):
             raise ValidationError("Email can't contain special characters.")
         return email
 
@@ -63,36 +58,38 @@ class RegisterForm(forms.ModelForm):
             raise ValidationError("Password and Confirm Password do not match.")
         return cleaned_data
 
+
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 
-class ProfileEditForm(forms.ModelForm):
+class ProfileEditForm(forms.ModelForm, CustomValidationMixin):
     class Meta:
         model = Account
         fields = ['first_name', 'last_name', 'email', 'phone']
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
-        if num_checker(first_name):
+        if self.num_checker(first_name):
             raise ValidationError("First Name can't contain numbers.")
-        if special_char_checker(first_name):
+        if self.special_char_checker(first_name):
             raise ValidationError("First Name can't contain special characters.")
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
-        if num_checker(last_name):
+        if self.num_checker(last_name):
             raise ValidationError("Last Name can't contain numbers.")
-        if special_char_checker(last_name):
+        if self.special_char_checker(last_name):
             raise ValidationError("Last Name can't contain special characters.")
         return last_name
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email_special_char_checker(email):
+        if self.email_special_char_checker(email):
             raise ValidationError("Email can't contain special characters.")
         return email
+
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(
@@ -119,3 +116,4 @@ class ChangePasswordForm(forms.Form):
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
+
