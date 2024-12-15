@@ -24,27 +24,23 @@ def checkout_req(request):
         req_user = request.user
 
         if req_user.is_authenticated:
-            # Cek jika transaction ID sudah ada di database
             transaction_id = request.POST['transaction_id']
             invoice_exits = invoice.objects.filter(transaction_id=transaction_id).exists()
 
             if invoice_exits:
                 messages.error(request, "Sorry, transaction ID already exists.")
-                return redirect("checkout_page")
+                return redirect('checkout:checkout_page')
 
-            # Menyimpan data order
             client = request.user
             order_save = order.objects.create(client=client)
             order_save.save()
 
-            # Mengakses data keranjang
             session = request.session.session_key
             cart = Cart.objects.get(cart_session=session)
             cart_items_list = CartItems.objects.all().filter(cart=cart)
             total = 0
 
             for item in cart_items_list:
-                # Ganti Book dengan Antique
                 antique_item = Antique.objects.get(id=item.antique.id)
                 price = antique_item.price
                 quantity = item.quantity
@@ -58,7 +54,6 @@ def checkout_req(request):
                 )
                 order_list_save.save()
 
-            # Membuat invoice
             total_price = total
             first_name = request.POST['first_name']
             last_name = request.POST['last_name']
@@ -69,16 +64,14 @@ def checkout_req(request):
             country = request.POST['country']
             order_note = request.POST['order_note']
 
-            # Validasi input pengguna
             if num_checker(first_name):
                 messages.error(request, "Sorry, First Name can't contain numbers.")
-                return redirect("checkout_page")
+                return redirect('checkout:checkout_page')
 
             if special_char_checker(first_name):
                 messages.error(request, "Sorry, First Name can't contain special characters.")
-                return redirect("checkout_page")
+                return redirect('checkout:checkout_page')
 
-            # Simpan invoice
             save_invoice = invoice.objects.create(
                 order_id=order_save,
                 total_price=total_price,
@@ -95,13 +88,10 @@ def checkout_req(request):
                 invoice_status="PENDING_CHECK",
             )
 
-            # Perbarui status order
             order.objects.filter(order_id=order_save.order_id).update(order_status="PROCESSING")
 
-            # Hapus keranjang
             cart.delete()
 
-            # Kurangi stok Antique
             for item in cart_items_list:
                 antique_item = Antique.objects.get(id=item.antique.id)
                 antique_item.stock -= item.quantity

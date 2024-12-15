@@ -3,12 +3,13 @@ from datetime import datetime
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, logout
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView, UpdateView
 from .forms import RegisterForm, LoginForm, ProfileEditForm, ChangePasswordForm
 from cart.models import Cart
+from django.views import View
 
 class RegisterView(FormView):
     template_name = 'accounts/register.html'
@@ -88,6 +89,17 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
         for error in form.errors.values():
             messages.error(self.request, error)
         return redirect('profile_edit')
+
+
+class DeleteAccountView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        logout(request)  # Logout user after deleting account
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect('login')  # Redirect to the login page
 
 
 class ChangePasswordView(LoginRequiredMixin, FormView):

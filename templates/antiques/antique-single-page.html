@@ -5,7 +5,11 @@
     <div class="container" style="padding-top:60px; padding-bottom:20px;">
         <div class="row">
             <div class="col-md-4 col-sm-12">
-                <img src="{{ antique.image.url }}" style="height: 529px;" />
+                {% if antique.image %}
+                    <img src="{{ antique.image.url }}" class="img-fluid rounded" style="max-height: 400px; object-fit: cover;" alt="{{ antique.title }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/300" class="img-fluid rounded" style="max-height: 400px; object-fit: cover;" alt="No image available">
+                {% endif %}
             </div>
             <div class="col-md-5">
                 <h3 class="item-title-single">{{ antique.title }}</h3>
@@ -25,7 +29,7 @@
                     <div class="col">
                         {% if antique.stocks <= 0 %}
                         <button class="btn boihut-addnow-btn btn-disabled">Out of Stock</button>
-                        {% elif antique.stocks_available is False %}
+                        {% elif not antique.stocks_available %}
                         <h3 class="color-red">Product Not Available</h3>
                         {% else %}
                         <a href="{% url 'add_cart' antique.slug %}" class="btn boihut-addnow-btn">Add to cart</a>
@@ -37,7 +41,7 @@
                         <span class="item-default-single align-items-left">Category:</span>
                     </div>
                     <div class="col-6 col-sm-6 g-0">
-                        <span class="item-category">{{ antique.category }}</span>
+                        <span class="item-category">{{ antique.category.category_name }}</span>
                     </div>
                 </div>
                 <div class="row g-0 mt-3">
@@ -75,17 +79,21 @@
                 <h3 class="text-front-page pt-3">Related Antiques</h3>
             </div>
             <div class="product container">
-                <div class="row">
-                    {% for related_antique in related_antiques %}
-                    <div class="product-box col-6 col-md-2">
-                        <a class="text-decoration-none" href="/antique/{{ related_antique.slug }}">
-                            <img class="product-img" src="{{ related_antique.image.url }}" />
-                            <h3 class="item-title">{{ related_antique.title }}</h3>
-                            <p class="item-price"><b>{{ related_antique.price }}</b></p>
-                            <button class="btn btn-custom">Buy Now</button>
-                        </a>
-                    </div>
-                    {% endfor %}
+    <div class="row">
+        {% if related_antiques %}
+            {% for related_antique in related_antiques %}
+                <div class="product-box col-6 col-md-2">
+                    <a class="text-decoration-none" href="{% url 'single_antique' related_antique.slug %}">
+                        <img class="product-img" src="{{ related_antique.image.url }}" alt="{{ related_antique.title }}">
+                        <h3 class="item-title">{{ related_antique.title }}</h3>
+                        <p class="item-price"><b>${{ related_antique.price }}</b></p>
+                        <button class="btn btn-custom">Buy Now</button>
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>{{ related_antiques_message }}</p>
+        {% endif %}
                 </div>
             </div>
         </div>

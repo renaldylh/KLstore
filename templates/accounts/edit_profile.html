@@ -8,7 +8,7 @@
         <div class="col-md-12" style="margin-top:20px;margin-bottom:30px;">
             {% include 'messages.html' %}
         </div>
-
+ 
         <h3 class="default-style"> Edit Account Information </h3><hr>
         <p class="default-style">Please fill out the form correctly. Incorrect information can lead to the account being lost.</p>
 
@@ -16,7 +16,7 @@
             <div class="row">
                 <form method="POST">
                     {% csrf_token %}
-                    
+
                     <!-- First Name -->
                     <div class="form-group">
                         <label for="first_name">First name</label>
@@ -69,11 +69,41 @@
                         {% endif %}
                     </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary" style="margin-top:30px;">Update</button>
+                    <!-- Submit and Delete Button in One Row -->
+                    <div class="d-flex justify-content-start gap-2">
+                        <button type="submit" class="btn btn-primary" style="margin-top:30px;">Update</button>
+
+                        <!-- Tombol untuk memicu modal -->
+                        <button type="button" class="btn btn-danger" style="margin-top:30px;" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            Yes, Delete Account
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Konfirmasi Hapus Akun -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_account' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}

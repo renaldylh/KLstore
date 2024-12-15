@@ -1,0 +1,100 @@
+{% extends 'dashboard-base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    {% include 'dashboard-menu.html' %}
+    <div class="tab-content col-9" style="margin-top:60px;margin-left:30px;margin-right:20px">
+        <h3 class="default-style">Antique List</h3>
+        <hr>
+        <p class="default-style">
+            Below is the list of antiques. You can update or delete an antique item as needed.
+        </p>
+
+        <div class="mb-3">
+            <a href="{% url 'antique_create' %}" class="btn btn-success">Create New Antique</a>
+        </div>
+
+        <!-- Table to display antiques -->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if antiques %}
+                    {% for antique in antiques %}
+                    <tr>
+                        <td>{{ antique.id }}</td>
+                        <td>{{ antique.title }}</td>
+                        <td>{{ antique.category.category_name }}</td>
+                        <td>${{ antique.price }}</td>
+                        <td>{{ antique.stocks_available|yesno:"Available,Unavailable" }}</td>
+                        <td>
+                            <a href="{% url 'antique_update' antique.id %}" class="btn btn-warning btn-sm">Update</a>
+                            <form action="{% url 'antique_delete' antique.id %}" method="POST" style="display:inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this antique?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No antiques found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">First</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Last</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

@@ -31,14 +31,18 @@
 
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <div class="navbar-nav ms-auto">
-      <a class="nav-item nav-link active" href="/">Home <span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link active" style="color: #b88e09" href="/">Home <span class="sr-only">(current)</span></a>
 
       <li class="nav-item dropdown">
            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Category</a></a>
            <ul class="dropdown-menu">
-               {%for category in categories%}
-            <li><a class="dropdown-item" href="/category/{{category.slug}}">{{category.category_name}}</a></li>
-             {%endfor%}
+             {% if categories %}
+    {% for category in categories %}
+        <li><a class="dropdown-item" href="/category/{{ category.slug }}">{{ category.category_name }}</a></li>
+    {% endfor %}
+{% else %}
+    <li class="list-group-item text-muted text-center">No categories available</li>
+{% endif %}
 
            </ul>
   </li>

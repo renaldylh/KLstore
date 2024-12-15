@@ -36,17 +36,34 @@
                        value="{{ form.email.value|default_if_none:'' }}" placeholder="Enter Your Email Address" required>
                 {{ form.email.errors }}
             </div>
-            <div class="form-group col-md-6">
-                <label for="id_password">Password</label>
-                <input type="password" class="form-control" name="password" id="id_password"
-                       placeholder="Enter Your Password" required>
-                {{ form.password.errors }}
+            <div class="form-group col-md-6 position-relative">
+            <label for="id_password">Password</label>
+            <input type="password" class="form-control pr-5" name="password" id="id_password"
+                   placeholder="Enter Your Password" required>
+            {{ form.password.errors }}
+            <span 
+                onclick="document.getElementById('id_password').type = this.getAttribute('data-visible') === 'false' ? 'text' : 'password'; 
+                         this.setAttribute('data-visible', this.getAttribute('data-visible') === 'false');"
+                data-visible="false"
+                class="position-absolute"
+                style="right: 25px; top: 35px; cursor: pointer;">
+                <i class="fa-solid fa-eye" id="toggle_icon_password"></i>
+                </span>
             </div>
-            <div class="form-group col-md-6">
-                <label for="id_confirm_password">Re-Enter Password</label>
-                <input type="password" class="form-control" name="confirm_password" id="id_confirm_password"
-                       placeholder="Re-Enter Your Password" required>
-                {{ form.confirm_password.errors }}
+
+        <div class="form-group col-md-6 position-relative">
+            <label for="id_confirm_password">Re-Enter Password</label>
+            <input type="password" class="form-control pr-5" name="confirm_password" id="id_confirm_password"
+                   placeholder="Re-Enter Your Password" required>
+            {{ form.confirm_password.errors }}
+            <span 
+                onclick="document.getElementById('id_confirm_password').type = this.getAttribute('data-visible') === 'false' ? 'text' : 'password'; 
+                         this.setAttribute('data-visible', this.getAttribute('data-visible') === 'false');"
+                data-visible="false"
+                class="position-absolute"
+                style="right: 25px; top: 35px; cursor: pointer;">
+                <i class="fa-solid fa-eye" id="toggle_icon_confirm_password"></i>
+                </span>
             </div>
             <div class="form-group col-md-6">
                 <label for="id_phone">Phone Number</label>

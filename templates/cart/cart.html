@@ -1,46 +1,65 @@
 {% extends 'base.html' %}
-{%load mathfilters %}
-{%block content%}
-{%load static%}
+{% load mathfilters %}
+{% block content %}
+{% load static %}
 
-
-<div class="container" style="margin-top:60px">
-    {%for cart_item in cart_items%}
+<div class="container" style="margin-top: 60px;">
+    {% for cart_item in cart_items %}
     <div class="row book-cart-box">
-
-          <div class="book-img-info col-md-5"> <img class="book-cart-img" align="left" src="{{cart_item.book.image.url}}" style="height: 128px;width: 126px;"/>
-              <a href="/book/{{cart_item.book.slug}}" class="nostyle">
-              <div class="col book-short-detail"><div class="book-title" ><h3>{{cart_item.book.title}}</h3></div></div> </a>
-              <div class="col author-name"><p>{{cart_item.book.author}}</p></div></div>
-              <div class="col-md-1 book-cart-price"><b>{{cart_item.book.price}}</b></div>
-               <form action="/update_cart_item/{{cart_item.book.slug}}" method="POST">
-                   {%csrf_token%}
-              <div class="col-md-1 book-cart-price"><b><input class="boihut-book-checkout-button" name="quantity" type="number" value="{{cart_item.quantity}}" min="1" max="{{cart_item.book.stocks}}"></b></div>
-
-                <div class="col-md-1 book-cart-total-book-price"><b>{{cart_item.book.price|mul:cart_item.quantity }}</b></div>
-        <div class="col-md-2" ><button type="submit" align="right" class="btn boihut-custom-btn-update">Update</button></div> </form>
-            <div class="col-md-1"><a href="{%url 'delete_cart_item' cart_item.book.slug%}"><button  align="right" class="btn boihut-custom-btn-remove">Delete</button></a></div>
+        <div class="book-img-info col-md-5">
+            {% if cart_item.antique.image %}
+            <img class="book-cart-img" align="left" src="{{ cart_item.antique.image.url }}" style="height: 128px; width: 126px;" />
+            {% else %}
+            <img class="book-cart-img" align="left" src="https://via.placeholder.com/128" style="height: 128px; width: 126px;" alt="No Image Available" />
+            {% endif %}
+            <a href="{% url 'single_antique' cart_item.antique.slug %}" class="nostyle">
+                <div class="col book-short-detail">
+                    <div class="book-title">
+                        <h3>{{ cart_item.antique.title }}</h3>
+                    </div>
+                </div>
+            </a>
+            <div class="col author-name">
+                <p>{{ cart_item.antique.maker }}</p>
+            </div>
+        </div>
+        <div class="col-md-1 book-cart-price">
+            <b>${{ cart_item.antique.price }}</b>
+        </div>
+        <form action="{% url 'update_cart' cart_item.antique.slug %}" method="POST">
+            {% csrf_token %}
+            <div class="col-md-1 book-cart-price">
+                <b>
+                    <input class="boihut-book-checkout-button" name="quantity" type="number" value="{{ cart_item.quantity }}" min="1" max="{{ cart_item.antique.stocks }}">
+                </b>
+            </div>
+            <div class="col-md-1 book-cart-total-book-price">
+                <b>${{ cart_item.antique.price|mul:cart_item.quantity }}</b>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" align="right" class="btn boihut-custom-btn-update">Update</button>
+            </div>
+        </form>
+        <div class="col-md-1">
+            <a href="{% url 'delete_cart_item' cart_item.antique.slug %}">
+                <button align="right" class="btn boihut-custom-btn-remove">Delete</button>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
-{%endfor%}
-</div>
-</div>
-
-<div class="container "><div class="row" >
-<div class="col-md-5 col-sm-12 card boihut-checkout-card" align="right">
-    <h4 align="left" class="antique-h4-checkout">Subtotal: {{total}}</h4>
-    <h4 align="left" class="antique-h4-checkout">Grandtotal: {{total}}</h4>
-    <a href="/static"><button class="btn antique-checkout-continue">
-        Continue Shopping
-    </button></a>
-    <a class="btn antique-checkout-btn" href="/checkout">
-        Checkout </a>
-
+<div class="container">
+    <div class="row">
+        <div class="col-md-5 col-sm-12 card boihut-checkout-card" align="right">
+            <h4 align="left" class="antique-h4-checkout">Subtotal: ${{ total }}</h4>
+            <h4 align="left" class="antique-h4-checkout">Grandtotal: ${{ total }}</h4>
+            <a href="{% url 'home' %}">
+                <button class="btn antique-checkout-continue">Continue Shopping</button>
+            </a>
+            <a class="btn antique-checkout-btn" href="/checkout">Checkout</a>
+        </div>
+    </div>
 </div>
 
-</div>
-</div>
-
-
-
-{%endblock content%}
+{% endblock %}

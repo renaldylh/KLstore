@@ -567,7 +567,7 @@ h4.antique-h4-checkout{
 }
 
 .boihut-favorite{
- color:#71C838;
+ color:#b88e09;
 
 }
 .hero-text{
@@ -635,19 +635,19 @@ letter-spacing:1px;
 
 
 .navbar-light .navbar-nav .nav-link.active, .navbar-light .navbar-nav .show>.nav-link {
-    color: rgb(114 170 70);
+    color: #b88e09;
 }
 
 
 .fa-2x {
     font-size: 1.8em;
     margin: 3px;
-    color: #73aa47;
+    color: #b88e09;
 }
 
 
 .text-green{
-color: #73aa47;
+color: #b88e09;
 }
 
 .container-fluid.navbar-container, .navbar-brand {
@@ -701,7 +701,8 @@ padding: 10px 4px;
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
-    background-color: #6a9d42;
+    background-color:#b88e09;
+;
     border-color: initial !important;
     }
 
@@ -716,7 +717,7 @@ padding: 10px 4px;
     }
 
 .page-item.active .page-link{
-border-color: #6a9d42;
+border-color: #b88e09;
 }
 
 .card .card-dashboard{
@@ -805,12 +806,12 @@ height: 46.98px;
     justify-content:center;
     align-content: center;
     padding: 12px 98px;
-    background: linear-gradient(0deg, rgba(23, 134, 40, 0.2), rgba(23, 134, 40, 0.2)), #73AA47;
+    background: #b88e09;
 }
 
 .fa-custom{
 font-size:25px;
-color:#609A32;
+color:#b88e09;
 padding:2px;
 
 }

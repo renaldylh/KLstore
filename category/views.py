@@ -1,31 +1,33 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from antiques.models import Antique
-from django.core.paginator import Paginator,PageNotAnInteger, EmptyPage
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .models import Category
 
 def category(request, cat_slug=None):
-    cat_name = ""
-    if cat_slug is None:
-        all_antique = Paginator(Antique.objects.all().order_by('-modified_on'),20)
+    cat_name = "All Antiques"
+    if cat_slug:
+        cat = get_object_or_404(Category, slug=cat_slug)
+        all_antique = Antique.objects.filter(category=cat).order_by('-modified_on')
+        cat_name = cat.category_name
     else:
-        print(cat_slug)
-        cat = Category.objects.get(slug=cat_slug)
-        all_antique = Paginator(Antique.objects.all().filter(category=cat).order_by('-modified_on'),20)
-        cat_name= cat.category_name
+        all_antique = Antique.objects.all().order_by('-modified_on')
 
+
+    paginator = Paginator(all_antique, 20)
     page = request.GET.get('page')
 
     try:
-        antiques = all_antique.page(page)
+        antiques = paginator.page(page)
     except PageNotAnInteger:
-        antiques = all_antique.page(1)
+        antiques = paginator.page(1)
     except EmptyPage:
-        antiques = all_antique.page(1)
+        antiques = paginator.page(paginator.num_pages)
 
     context = {
         'antiques': antiques,
-         'category_name':cat_name,
+        'category_name': cat_name,
     }
+
     return render(request, 'category/antique-cat.html', context)
 
 

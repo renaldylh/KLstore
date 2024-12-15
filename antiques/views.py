@@ -6,10 +6,15 @@ from checkout.models import invoice
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Antique, Category
+from .forms import AntiqueForm
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+
+categories_list = Category.objects.all()
 
 def home(request):
     antiques_list = Antique.objects.all().order_by('-created_on')
@@ -37,14 +42,61 @@ def about(request):
 
     return render(request, 'antiques/about.html')
 
+
+class AntiqueListView(ListView):
+    model = Antique
+    template_name = 'antiques/antique_list.html'
+    context_object_name = 'antiques'
+    ordering = ['-created_on']
+
+class AntiqueCreateView(CreateView):
+    model = Antique
+    form_class = AntiqueForm
+    template_name = 'antiques/antique_form.html'
+    success_url = reverse_lazy('antique_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Antique has been created successfully!')
+        return super().form_valid(form)
+
+class AntiqueUpdateView(UpdateView):
+    model = Antique
+    form_class = AntiqueForm
+    template_name = 'antiques/antique_form.html'
+    success_url = reverse_lazy('antique_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Antique has been updated successfully!')
+        return super().form_valid(form)
+
+class AntiqueDeleteView(DeleteView):
+    model = Antique
+    template_name = 'antiques/antique_confirm_delete.html'
+    success_url = reverse_lazy('antique_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Antique has been deleted successfully!')
+        return super().delete(request, *args, **kwargs)
+
+
 def single_antique(request, antique_slug):
     antique = get_object_or_404(Antique, slug=antique_slug)
-    related_antiques = Antique.objects.filter(category=antique.category).exclude(id=antique.id)[:5]
+
+    related_antiques = Antique.objects.filter(
+        category=antique.category
+    ).exclude(id=antique.id)[:5]
+
+    if not related_antiques.exists():
+        related_antiques_message = "No related antiques available."
+    else:
+        related_antiques_message = None
 
     context = {
         'antique': antique,
         'related_antiques': related_antiques,
+        'related_antiques_message': related_antiques_message,
     }
+
     return render(request, 'antiques/antique-single-page.html', context)
 
 def search_result(request):
