@@ -1,8 +1,5 @@
 from django.db import models
 
-# Create your models here.
-from django.db import models
-
 from antiques.models import Antique
 from accounts.models import Account
 
@@ -23,8 +20,6 @@ class order(models.Model):
     def __str__(self):
         return str(self.order_id)
 
-
-
 class order_list(models.Model):
     order_id = models.ForeignKey(order, blank=False,on_delete=models.DO_NOTHING)
     order_item = models.ForeignKey(Antique, blank=False,on_delete=models.DO_NOTHING)
@@ -32,8 +27,6 @@ class order_list(models.Model):
     order_price = models.IntegerField(blank=False)
     def __str__(self):
         return str(self.order_item)
-
-
 
 class order_note_admin(models.Model):
     order_id = models.ForeignKey(order,blank=False,on_delete=models.DO_NOTHING)
@@ -48,14 +41,12 @@ class invoice(models.Model):
               ("TIMEOUT","Timeout"),
               ("PENDING_CHECK","Pending Check"),)
 
-
     invoice_id = models.AutoField(primary_key=True)
     invoice_status = models.CharField(max_length=300, blank=False, choices=status,default="Pending Payment")
     order_id = models.ForeignKey(order,null=True, blank=False,on_delete=models.DO_NOTHING)
     total_price = models.IntegerField(blank=False)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-
 
     first_name=models.CharField(max_length=70,blank=False)
     last_name=models.CharField(max_length=70,blank=False)

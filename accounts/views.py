@@ -10,6 +10,7 @@ from django.views.generic import FormView, TemplateView, UpdateView
 from .forms import RegisterForm, LoginForm, ProfileEditForm, ChangePasswordForm
 from cart.models import Cart
 from django.views import View
+from .models import Account
 
 class RegisterView(FormView):
     template_name = 'accounts/register.html'
@@ -126,16 +127,30 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
         return redirect('change_password')
 
 @login_required(login_url='/login')
+@login_required(login_url="/login")
 def account_home(request):
-    user = request.user
-    orders = order.objects.filter(client=user).order_by('-date_created')[:4]
-    context = {
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'order_id_list': orders,
-        'total_orders': order.objects.filter(client=user).count(),
-        'dilevered_orders': order.objects.filter(client=user, order_status="COMPLETED").count(),
-        'registered_on': user.registered_on.strftime("%d/%m/%Y"),
-        'last_login': user.last_active.strftime("%d/%m/%Y") if user.last_active else None,
-    }
-    return render(request, "accounts/dashboard.html", context)
+    user = Account.objects.get(email=request.user.email)
+    orders = order.objects.all().filter(client=user).order_by('date_created')[:4]
+    total_oders = len(order.objects.all().filter(client=user).order_by('date_created'))
+    dilevered_orders = len(order.objects.all().filter(client=user,order_status="DELIVERED"))
+    print(total_oders)
+    print(dilevered_orders)
+    registered_on = user.registered_on
+    registered_on = datetime.fromisoformat(str(registered_on)).strftime("%d/%m/%Y")
+    last_login = user.last_active
+    last_login = datetime.fromisoformat(str(last_login)).strftime("%d/%m/%Y")
+    if request.user.is_authenticated:
+        context={
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'order_id_list' : orders,
+            'total_orders':total_oders,
+            'registered_on':registered_on,
+            'dilevered_orders':dilevered_orders,
+            'last_login':last_login,
+
+        }
+        return render(request, "accounts/dashboard.html",context=context)
+    else:
+         messages.error(request,"Sorry, You are not logged in. Please Login and try again")
+         return redirect("login")

@@ -1,0 +1,56 @@
+{% extends 'dashboard-base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    {% include 'dashboard-menu.html' %}
+    <div class="col-9" style="margin-top: 60px; margin-left: 30px; margin-right: 20px;">
+        <h3 class="default-style">Update Order Status</h3>
+        <hr>
+        <p class="default-style">
+            Use the form below to update the status of this order.
+        </p>
+
+        <!-- Form for updating order -->
+        <form method="POST" class="form">
+            {% csrf_token %}
+            
+            <!-- Order ID (read-only) -->
+            <div class="form-group">
+                <label for="order_id">Order ID:</label>
+                <input type="text" class="form-control" id="order_id" value="{{ order.order_id }}" readonly>
+            </div>
+
+            <!-- Client Information (read-only) -->
+            <div class="form-group">
+                <label for="client">Client:</label>
+                <input type="text" class="form-control" id="client" value="{{ order.client.username }}" readonly>
+            </div>
+
+            <!-- Order Status (select field from form) -->
+            <div class="form-group">
+                <label for="order_status">Order Status:</label>
+                {{ form.order_status }}
+            </div>
+
+            <!-- Date Created (read-only) -->
+            <div class="form-group">
+                <label for="date_created">Date Created:</label>
+                <input type="text" class="form-control" id="date_created" value="{{ order.date_created|date:'Y-m-d H:i:s' }}" readonly>
+            </div>
+
+            <!-- Last Updated (read-only) -->
+            <div class="form-group">
+                <label for="date_updated">Last Updated:</label>
+                <input type="text" class="form-control" id="date_updated" value="{{ order.date_updated|date:'Y-m-d H:i:s' }}" readonly>
+            </div>
+
+            <!-- Submit and Back Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Update Order</button>
+                <a href="{% url 'checkout:order_list' %}" class="btn btn-secondary">Back to Orders</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

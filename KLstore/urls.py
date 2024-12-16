@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('dashboard/admin/security/private/command/window/staff/admin/superuser/hidden/access/', admin.site.urls, name="admin"),
     path('', include('accounts.urls')),
     path('', include('antiques.urls')),
     path('cart/', include('cart.urls')),

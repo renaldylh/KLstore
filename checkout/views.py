@@ -1,111 +1,87 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
-from django.contrib import auth, messages
-from cart.models import Cart, CartItems
-from .models import order, order_list, order_note_admin, invoice
-from antiques.models import Antique
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from checkout.forms import CheckoutForm, OrderUpdateForm
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import order
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-@login_required(login_url="/login")
-def checkout_req(request):
-    special_char_list = r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
-    email_special_char_list = r"!\"#$%&'()*+,/:;<=>?@[\]^`{|}~"
+class CheckoutPageView(LoginRequiredMixin, View):
+    login_url = '/login'
 
-    def num_checker(string):
-        return any(i.isdigit() for i in string)
+    def get(self, request):
+        form = CheckoutForm()
+        return render(request, "checkout/checkout.html", {'form': form})
 
-    def special_char_checker(string):
-        for i in string:
-            if i in special_char_list:
-                return True
-        return False
+class CheckoutProcessView(LoginRequiredMixin, View):
+    login_url = '/login'
 
-    if request.POST:
-        req_user = request.user
+    def post(self, request):
+        form = CheckoutForm(request.POST)
+        session_key = request.session.session_key
 
-        if req_user.is_authenticated:
-            transaction_id = request.POST['transaction_id']
-            invoice_exits = invoice.objects.filter(transaction_id=transaction_id).exists()
+        if not session_key:
+            messages.error(request, "Session expired. Please try again.")
+            return redirect("checkout:checkout_page")
 
-            if invoice_exits:
-                messages.error(request, "Sorry, transaction ID already exists.")
-                return redirect('checkout:checkout_page')
-
-            client = request.user
-            order_save = order.objects.create(client=client)
-            order_save.save()
-
-            session = request.session.session_key
-            cart = Cart.objects.get(cart_session=session)
-            cart_items_list = CartItems.objects.all().filter(cart=cart)
-            total = 0
-
-            for item in cart_items_list:
-                antique_item = Antique.objects.get(id=item.antique.id)
-                price = antique_item.price
-                quantity = item.quantity
-                total += price * quantity
-
-                order_list_save = order_list.objects.create(
-                    order_id=order_save,
-                    order_item=antique_item,
-                    order_price=price,
-                    order_quantity=quantity
-                )
-                order_list_save.save()
-
-            total_price = total
-            first_name = request.POST['first_name']
-            last_name = request.POST['last_name']
-            address = request.POST['address']
-            city = request.POST['city']
-            division = request.POST['division']
-            zip = request.POST['zip']
-            country = request.POST['country']
-            order_note = request.POST['order_note']
-
-            if num_checker(first_name):
-                messages.error(request, "Sorry, First Name can't contain numbers.")
-                return redirect('checkout:checkout_page')
-
-            if special_char_checker(first_name):
-                messages.error(request, "Sorry, First Name can't contain special characters.")
-                return redirect('checkout:checkout_page')
-
-            save_invoice = invoice.objects.create(
-                order_id=order_save,
-                total_price=total_price,
-                first_name=first_name,
-                last_name=last_name,
-                address=address,
-                division=division,
-                city=city,
-                zip=zip,
-                country=country,
-                transaction_id=transaction_id,
-                order_note=order_note,
-                transaction_method='BCA',
-                invoice_status="PENDING_CHECK",
-            )
-
-            order.objects.filter(order_id=order_save.order_id).update(order_status="PROCESSING")
-
-            cart.delete()
-
-            for item in cart_items_list:
-                antique_item = Antique.objects.get(id=item.antique.id)
-                antique_item.stock -= item.quantity
-                antique_item.save()
-
-            messages.success(request, "Your order has been successfully received.")
-            return redirect("orders")
-
+        if form.is_valid():
+            try:
+                form.process_checkout(request.user, session_key)
+                messages.success(request, "Your order has been successfully received.")
+                return redirect("orders")
+            except Exception as e:
+                messages.error(request, f"Error processing checkout: {str(e)}")
+                return redirect("checkout:checkout_page")
         else:
-            return redirect("login")
+            for error in form.errors.values():
+                messages.error(request, error)
+            return redirect("checkout:checkout_page")
 
-def checkout_page(request):
-    if request.user.is_authenticated:
-        return render(request, "checkout/checkout.html")
+@login_required
+def order_list(request):
+    if not request.user.is_staff:
+        messages.error(request, "You are not authorized to access this page.")
+        return redirect('home')
+
+    # Fetch all orders, ordered by date created
+    orders = order.objects.all().order_by('-date_created')
+
+    # Set up pagination
+    paginator = Paginator(orders, 10)  # 10 orders per page
+    page = request.GET.get('page')
+
+    try:
+        paginated_orders = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        paginated_orders = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results
+        paginated_orders = paginator.page(paginator.num_pages)
+
+    context = {
+        'orders': paginated_orders,
+    }
+
+    return render(request, 'checkout/ order_list.html', context)
+@login_required
+def update_order(request, order_id):
+    if not request.user.is_staff:
+        messages.error(request, "You are not authorized to perform this action.")
+        return redirect('home')
+
+    order_instance = get_object_or_404(order, pk=order_id)
+
+    if request.method == 'POST':
+        form = OrderUpdateForm(request.POST, instance=order_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Order has been updated successfully.')
+            return redirect('checkout:order_list')  # Ensure correct URL name
+        else:
+            messages.error(request, 'Please fix the errors below.')
     else:
-        messages.error(request, "You need to be registered to place an order.")
-        return redirect("register")
+        form = OrderUpdateForm(instance=order_instance)
+
+    return render(request, 'checkout/update_order.html', {'form': form, 'order': order_instance})

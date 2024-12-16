@@ -29,9 +29,22 @@
       <span class="icon-bar"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarResponsive">
-    <div class="navbar-nav ms-auto">
-     <a class="nav-item nav-link active" href="/" style="color: #fff;">Home <span class="sr-only">(current)</span></a>
+
+
+<div class="collapse navbar-collapse" id="navbarResponsive">
+    <div class="navbar-nav ms-auto d-flex align-items-center">
+
+        <form class="d-flex" action="{% url 'search_res' %}" method="get" style="margin-top: 8px; padding-left: 10px; margin-right: 20px;"> <!-- Adjusted margins -->
+            <input class="form-control me-2" type="search" placeholder="Search antiques" aria-label="Search" name="query" required style="width: 210px; height: 30px;">
+            <button class="btn btn-outline-light" type="submit" style="height: 30px; padding: 0 8px;">Search</button>
+        </form>
+
+        <a class="nav-item nav-link active" href="/" style="color: #fff;">Home <span class="sr-only">(current)</span></a>
+
+    </div>
+</div>
+
+
 
 
       <li class="nav-item dropdown">

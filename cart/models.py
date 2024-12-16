@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from antiques.models import Antique
 
 class Cart(models.Model):

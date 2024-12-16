@@ -83,13 +83,17 @@
         {% if related_antiques %}
             {% for related_antique in related_antiques %}
                 <div class="product-box col-6 col-md-2">
-                    <a class="text-decoration-none" href="{% url 'single_antique' related_antique.slug %}">
-                        <img class="product-img" src="{{ related_antique.image.url }}" alt="{{ related_antique.title }}">
-                        <h3 class="item-title">{{ related_antique.title }}</h3>
-                        <p class="item-price"><b>${{ related_antique.price }}</b></p>
-                        <button class="btn btn-custom">Buy Now</button>
-                    </a>
-                </div>
+        <a class="text-decoration-none" href="{% url 'single_antique' related_antique.slug %}">
+        {% if related_antique.image %}
+            <img class="product-img" src="{{ related_antique.image.url }}" alt="{{ related_antique.title }}">
+        {% else %}
+             <img src="https://via.placeholder.com/300" class="img-fluid rounded" alt="No image available">
+        {% endif %}
+        <h3 class="item-title">{{ related_antique.title }}</h3>
+        <p class="item-price"><b>${{ related_antique.price }}</b></p>
+        <button class="btn btn-custom">Buy Now</button>
+    </a>
+</div>
             {% endfor %}
         {% else %}
             <p>{{ related_antiques_message }}</p>

@@ -11,8 +11,7 @@
     <hr>
     <p class="default-style">Please fill up the form to complete your order</p>
 
-    <!-- Pastikan URL mengarah ke namespace dan path yang benar -->
-    <form action="{% url 'checkout_req' %}" method="POST">
+    <form action="{% url 'checkout:checkout_process' %}" method="post">
         {% csrf_token %}
         <meta charset="UTF-8">
 

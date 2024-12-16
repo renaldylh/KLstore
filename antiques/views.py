@@ -1,4 +1,3 @@
-from category.models import Category
 from checkout.models import order_list
 from checkout.models import order
 from accounts.models  import Account
@@ -6,13 +5,11 @@ from checkout.models import invoice
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Antique, Category
 from .forms import AntiqueForm
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 categories_list = Category.objects.all()
 
@@ -43,42 +40,74 @@ def about(request):
     return render(request, 'antiques/about.html')
 
 
-class AntiqueListView(ListView):
-    model = Antique
-    template_name = 'antiques/antique_list.html'
-    context_object_name = 'antiques'
-    ordering = ['-created_on']
+# Fungsi untuk memeriksa apakah pengguna memiliki hak akses admin
+def is_admin(user):
+    return user.is_superuser or user.is_staff
 
-class AntiqueCreateView(CreateView):
-    model = Antique
-    form_class = AntiqueForm
-    template_name = 'antiques/antique_form.html'
-    success_url = reverse_lazy('antique_list')
+# Daftar Antique
+@login_required
+def antique_list(request):
+    if not is_admin(request.user):
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('home')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Antique has been created successfully!')
-        return super().form_valid(form)
+    antiques = Antique.objects.all().order_by('-created_on')
+    return render(request, 'antiques/antique_list.html', {'antiques': antiques})
 
-class AntiqueUpdateView(UpdateView):
-    model = Antique
-    form_class = AntiqueForm
-    template_name = 'antiques/antique_form.html'
-    success_url = reverse_lazy('antique_list')
+# Membuat Antique Baru
+@login_required
+def antique_create(request):
+    if not is_admin(request.user):
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('home')
 
-    def form_valid(self, form):
-        messages.success(self.request, 'Antique has been updated successfully!')
-        return super().form_valid(form)
+    if request.method == 'POST':
+        form = AntiqueForm(request.POST, request.FILES)
+        if form.is_valid():
+            antique = form.save(commit=False)
+            antique.save()
+            messages.success(request, 'Antique has been created successfully!')
+            return redirect('antique_list')  # Redirect ke halaman daftar
+    else:
+        form = AntiqueForm()
 
-class AntiqueDeleteView(DeleteView):
-    model = Antique
-    template_name = 'antiques/antique_confirm_delete.html'
-    success_url = reverse_lazy('antique_list')
+    return render(request, 'antiques/antique_form.html', {'form': form})
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, 'Antique has been deleted successfully!')
-        return super().delete(request, *args, **kwargs)
+# Memperbarui Antique
+@login_required
+def antique_update(request, pk):
+    if not is_admin(request.user):
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('home')
 
+    antique = get_object_or_404(Antique, pk=pk)
 
+    if request.method == 'POST':
+        form = AntiqueForm(request.POST, request.FILES, instance=antique)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Antique has been updated successfully!')
+            return redirect('antique_list')  # Redirect ke halaman daftar
+    else:
+        form = AntiqueForm(instance=antique)
+
+    return render(request, 'antiques/antique_form.html', {'form': form, 'antique': antique})
+
+# Menghapus Antique
+@login_required
+def antique_delete(request, pk):
+    if not is_admin(request.user):
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('home')
+
+    antique = get_object_or_404(Antique, pk=pk)
+
+    if request.method == 'POST':
+        antique.delete()
+        messages.success(request, 'Antique has been deleted successfully!')
+        return redirect('antique_list')  # Redirect ke halaman daftar
+
+    return render(request, 'antiques/antique_confirm_delete.html', {'antique': antique})
 def single_antique(request, antique_slug):
     antique = get_object_or_404(Antique, slug=antique_slug)
 
@@ -128,25 +157,31 @@ def search_result(request):
 #     }
 #     return render(request, 'antiques-by-category.html', context)
 
+
 @login_required(login_url='/login')
 def orders(request):
-    user = request.user
-    orders = Antique.objects.filter(stocks_available=True).order_by('-modified_on')
+    if request.user.is_authenticated:
+        user = Account.objects.get(email=request.user.email)
+        order_id = order.objects.all().filter(client=user).order_by('date_created')
 
-    paginator = Paginator(orders, 10)
-    page = request.GET.get('page')
+        all_orders = Paginator(order.objects.all().filter(client=user).order_by('-date_created'), 10)
+        page = request.GET.get('page')
 
-    try:
-        paginated_orders = paginator.page(page)
-    except PageNotAnInteger:
-        paginated_orders = paginator.page(1)
-    except EmptyPage:
-        paginated_orders = paginator.page(paginator.num_pages)
+        try:
+            orders = all_orders.page(page)
+        except PageNotAnInteger:
+            orders = all_orders.page(1)
+        except EmptyPage:
+            orders = all_orders.page(all_orders.num_pages)
 
-    context = {
-        'orders': paginated_orders,
-    }
-    return render(request, 'antiques/list-orders.html', context)
+        context = {
+
+            'order_id_list': orders,
+        }
+        return render(request, "antiques/list-orders.html", context)
+    else:
+        messages.error("Sorry, you need to be logged in to view your orders")
+        return redirect("login")
 
 @login_required(login_url='/login')
 def view_order(request, order_id):

@@ -5,12 +5,21 @@
 
     <div class="list-group" id="MyTab" role="tablist">
       <a class="list-group-item list-group-item-action" data-toggle="list" href="/dashboard/"  ><i class="fa-solid fa-house"></i>Dashboard</a>
+            {% if user.is_authenticated and user.is_staff %}
            <a class="list-group-item list-group-item-action" data-toggle="list" href="{% url 'antique_list' %}">
             <i class="fa-solid fa-gem"></i> Antiques </a>
+            {% endif %}
       <a class="list-group-item list-group-item-action" data-toggle="list" href="/dashboard/orders" ><i class="fa-solid fa-shopping-cart"></i> Orders</a>
+       {% if user.is_staff %}
+         <a class="list-group-item list-group-item-action" href="{% url 'checkout:order_list' %}"><i class="fa-solid fa-box"></i> View Orders All</a>
+        {% endif %}
       <a class="list-group-item list-group-item-action" data-toggle="list" href="/dashboard/profile_edit" ><i class="fa-solid fa-user"></i> Edit Profile</a>
         <a class="list-group-item list-group-item-action" data-toggle="list" href="/dashboard/change_pwd" ><i class="fa-solid fa-key"></i> Change Password</a>
-
+        {% if user.is_authenticated and user.is_superuser %}
+            <a class="list-group-item list-group-item-action" href="admin/security/private/command/window/staff/admin/superuser/hidden/access/">
+                <i class="fa-solid fa-desktop"></i> Admin Panel
+            </a>
+        {% endif %}
         <a class="list-group-item list-group-item-action" data-toggle="list" href="/logout" ><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>

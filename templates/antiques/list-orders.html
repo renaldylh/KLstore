@@ -1,10 +1,10 @@
-{%extends 'dashboard-base.html' %}
+{%extends 'dashboard-base.html'%}
 {%load static%}
 
 {%block content%}
 
  <div class="row" >
-{%include 'dashboard-menu.html' %}
+{%include 'dashboard-menu.html'%}
  <div class="tab-content col-9 " style="margin-top:60px;margin-left:30px;margin-right:20px">
 
 <h3 class="default-style"> Your Orders List </h3><hr>
@@ -25,7 +25,7 @@
 
       <th scope="row">{{order.order_id}}</th>
       <td>{{order.order_status}}</td>
-      <td>{{order.date_created}}</td>
+      <td>{{order.date_created }}</td>
       <td><a href="/dashboard/view_order/{{order.order_id}}"> View Order</a></td>
     </tr>
   {%endfor%}
