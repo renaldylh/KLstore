@@ -1,7 +1,5 @@
 # 📌 Project Name: KLstore Antique Website
 
-![Project Screenshot](./path/to/your/screenshot.png)
-
 ## 🌟 **Overview**
 A brief introduction about your project:
 - What does the project do?
@@ -31,13 +29,12 @@ This project was developed as part of the **International Software Engineer Dipl
 ## 📸 **Screenshots**
 
 ### **Home Page**
-![Home Page](./path/to/your/homepage-screenshot.png)
+
 
 ### **Feature 1**
-![Feature 1](./path/to/feature1-screenshot.png)
+
 
 ### **Feature 2**
-![Feature 2](./path/to/feature2-screenshot.png)
 
 ---
 
